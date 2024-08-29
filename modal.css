@@ -1,3 +1,6 @@
+body{
+  font-family: 'Inter';
+}
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
@@ -13,11 +16,14 @@
   
   /* Modal Content/Box */
   .modal-content {
-    background-color: #fefefe;
+    
+    background-color: black;
     margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
     width: 80%; /* Could be more or less, depending on screen size */
+    
+    
   }
   
   /* The Close Button */
@@ -34,3 +40,54 @@
     text-decoration: none;
     cursor: pointer;
   }
+
+  #findWatch{
+    align-self: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+  }
+
+  #find{
+    background-color: transparent;
+    color: white;
+    border: 1px solid white;
+    border-radius: 5px;
+    height: 40px;
+    width: 400px;
+    margin: 5px;
+
+  }
+  #findBtn{
+    background-color: hsl(233, 6%, 27%);
+    color: white;
+    border: 1px solid hsl(233, 6%, 27%);
+    border-radius: 5px;
+    height: 40px;
+    cursor: pointer;
+
+  }
+
+  .item{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid white;
+    cursor: pointer;
+  }
+  .item img{
+    max-width: 150px;
+    height: auto;
+    object-fit: contain;
+    
+  }
+  .item p{
+    font-family: 'Inter';
+    color: white;
+    margin: 20px;
+  }
+  
+
+  

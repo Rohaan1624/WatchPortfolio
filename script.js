@@ -1,5 +1,9 @@
 const colBtn = document.getElementById('radioCol');
 const rowBtn = document.getElementById('radioRow');
+var modal = document.getElementById("myModal");
+var btn = document.getElementById("add");
+let modalDocument;
+
 
 colBtn.addEventListener('click', (event)=>{
     if(event.target.checked){
@@ -14,35 +18,10 @@ rowBtn.addEventListener('click', (event)=>{
     }
 })
 
-async function fetchData() {
-    const url = 'https://chrono24.p.rapidapi.com/scraper/chrono24/product?query=https%3A%2F%2Fwww.chrono24.com%2Frolex%2Frolex-submariner-date-ceramic-41mm-126610ln-unworn-2022--id16516741.htm';
-    const options = {
-	method: 'GET',
-	headers: {
-		'x-rapidapi-key': '7c86d04e2cmsh308f9037c038276p106460jsn191d593ba5c3',
-		'x-rapidapi-host': 'chrono24.p.rapidapi.com'
-	}
-};
-    try{
-        const response = await fetch(url, options);
-        const result = await response.json();
-        console.log(result);
-    }
-    catch(err){
-        console.log(err);
-    }
-}
-fetchData();
-
-// Get the modal
-var modal = document.getElementById("myModal");
-
-// Get the button that opens the modal
-var btn = document.getElementById("add");
-
 modal.onload = function() {
     // Access the iframe's document
-    var modalDocument = modal.contentWindow.document;
+    modalDocument = modal.contentWindow.document;
+    let container = modalDocument.body.querySelector('.results');
 
     // Find the element by ID inside the iframe
     var modalElement = modalDocument.getElementById("closeBtn");
@@ -51,6 +30,7 @@ modal.onload = function() {
     // When the user clicks on <span> (x), close the modal
     modalElement.onclick = function() {
         modal.style.display = "none";
+        container.innerHTML = '';
     }
   
     // When the user clicks anywhere outside of the modal, close it
@@ -59,10 +39,62 @@ modal.onload = function() {
         modal.style.display = "none";
         }
     }
+    modalDocument.getElementById('findBtn').onclick = async function() {
+        container.innerHTML = '';
+        let results = await fetchQuery(modalDocument.getElementById('find').value);
+        console.log(results);
+        for(let result of results){
+            let itemContainer = modalDocument.createElement('div');
+            let image = modalDocument.createElement('img');
+            let text = modalDocument.createElement('p');
+            itemContainer.classList = 'item';
+            itemContainer.id = result.refId;
+            image.src = result.watchImageUrl;
+            text.textContent = result.name;
+            itemContainer.appendChild(image);
+            itemContainer.appendChild(text);
+            container.appendChild(itemContainer);
+        }
+        let items = modalDocument.getElementsByClassName('item');
+        for(let item of items){
+            item.addEventListener('click', function(){
+                console.log(item, fetchData(item.id));
+            })
+        }
+    
+    }
  
 };
+
+async function fetchData(ref) {
+    try{
+        const response = await fetch(`https://serverchrono.onrender.com/api/scrape-price?query=${ref}`);
+        const result = await response.json();
+        return result;
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
+async function fetchQuery(query){
+    const url = `https://serverchrono.onrender.com/api/products?query=${query}`
+
+    try {
+        const response = await fetch(url);
+        const result = await response.json();
+        return result.productSuggestions
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 
 btn.onclick = function() {
   modal.style.display = "block";
 }
+
+
+
+
 
