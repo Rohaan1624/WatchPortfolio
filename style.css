@@ -115,27 +115,40 @@ body{
     justify-content: center;
     cursor: pointer;
 }
+#watchList{
+    display: flex;  
+    flex-direction: row;
+    flex-flow: row wrap;
+
+}
 .watchItem{
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 2fr 1fr 1fr;
+    grid-template-areas: 
+    "img img"
+    "h3 p"
+    "h3 h1";
+    grid-template-columns: 1fr 1fr;;
     height: 492px;
     width: 357px;
     align-items: center;
+    justify-content: center;
     
 }
 .watchItem img{
-    height: 420px;
-    width: 300px;
+    max-width: 300px;
+    height: 458.33px;
+    object-fit: contain;
     background: transparent;
     grid-column: span 2;
     margin: 0px;
     place-self: center;
+    
 
 }
 .watchItem h3{
     font-size: 16px;
     margin: 0px;
+    grid-row: span 2;
 
 }
 .watchItem p{

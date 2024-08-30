@@ -50,15 +50,38 @@ modal.onload = function() {
             itemContainer.classList = 'item';
             itemContainer.id = result.refId;
             image.src = result.watchImageUrl;
-            text.textContent = result.name;
+            itemContainer.name = result.manufacturerName;
+            text.textContent = result.manufacturerName +' '+ result.name +' ('+result.caseDiameter +') '+ result.caseMaterial;
             itemContainer.appendChild(image);
             itemContainer.appendChild(text);
             container.appendChild(itemContainer);
         }
         let items = modalDocument.getElementsByClassName('item');
         for(let item of items){
-            item.addEventListener('click', function(){
-                console.log(item, fetchData(item.id));
+            item.addEventListener('click', async function(){
+                let price = await fetchData(item.id);
+                console.log(price);
+                if (price.price === "Product not found"||price.price === "Price on request"){
+                    
+                }
+                let WatchContainer = document.createElement('div');
+                let WatchImg = document.createElement('img');
+                let WatchName = document.createElement('h3');
+                let WatchPrice = document.createElement('h1');
+                let ApproximationTag = document.createElement('p');
+
+                WatchContainer.classList = 'watchItem';
+                WatchImg.src = item.querySelector('img').src;
+                WatchName.textContent = item.querySelector('p').textContent;
+                WatchPrice.textContent = price.price;
+                ApproximationTag.textContent = 'Approx.';
+
+                WatchContainer.appendChild(WatchImg);
+                WatchContainer.appendChild(WatchName);
+                WatchContainer.appendChild(ApproximationTag);
+                WatchContainer.appendChild(WatchPrice);
+                document.getElementById('watchList').appendChild(WatchContainer);
+                modalElement.click();
             })
         }
     
@@ -89,10 +112,47 @@ async function fetchQuery(query){
     }
 }
 
+async function fetchBackup(query){
+        let result;
+        const url = `https://chrono24.p.rapidapi.com/scraper/chrono24/search?query=${query}`;
+        const options = {
+            method: 'GET',
+            headers: {
+                'x-rapidapi-key': '7c86d04e2cmsh308f9037c038276p106460jsn191d593ba5c3',
+                'x-rapidapi-host': 'chrono24.p.rapidapi.com'
+            }
+        };
+    
+        try {
+            const response = await fetch(url, options);
+            result = await response.json();
+            console.log(result);
+        } catch (error) {
+            console.error(error);
+        }
+    
+        const url1 = `https://chrono24.p.rapidapi.com/scraper/chrono24/product?query=https%3A%2F%2Fwww.chrono24.com%2Frolex%2F${result[0].slug}`;
+        const options1 = {
+            method: 'GET',
+            headers: {
+                'x-rapidapi-key': '7c86d04e2cmsh308f9037c038276p106460jsn191d593ba5c3',
+                'x-rapidapi-host': 'chrono24.p.rapidapi.com'
+            }
+        };
+
+        try {
+            const response1 = await fetch(url1, options1);
+            const result1 = await response1.json();
+            console.log(result1);
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
 btn.onclick = function() {
-  modal.style.display = "block";
+    modal.style.display = "block";
 }
+
 
 
 
