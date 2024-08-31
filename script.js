@@ -4,7 +4,6 @@ var modal = document.getElementById("myModal");
 var btn = document.getElementById("add");
 let modalDocument;
 
-
 colBtn.addEventListener('click', (event)=>{
     if(event.target.checked){
         document.getElementById('col').style.backgroundColor = "hsl(196, 76%, 46%)";
@@ -17,6 +16,7 @@ rowBtn.addEventListener('click', (event)=>{
         document.getElementById('col').style.backgroundColor = "hsl(233, 6%, 27%)";
     }
 })
+
 
 modal.onload = function() {
     // Access the iframe's document
@@ -39,6 +39,11 @@ modal.onload = function() {
         modal.style.display = "none";
         }
     }
+    modalDocument.getElementById('find').addEventListener('keydown', function(event){
+        if(event.key === 'Enter'){
+            modalDocument.getElementById('findBtn').click();
+        }
+    })
     modalDocument.getElementById('findBtn').onclick = async function() {
         container.innerHTML = '';
         let results = await fetchQuery(modalDocument.getElementById('find').value);
@@ -69,19 +74,26 @@ modal.onload = function() {
                 let WatchName = document.createElement('h3');
                 let WatchPrice = document.createElement('h1');
                 let ApproximationTag = document.createElement('p');
+                let RemoveBtn = document.createElement('span');
 
                 WatchContainer.classList = 'watchItem';
                 WatchImg.src = item.querySelector('img').src;
                 WatchName.textContent = item.querySelector('p').textContent;
                 WatchPrice.textContent = price.price;
                 ApproximationTag.textContent = 'Approx.';
+                RemoveBtn.textContent = 'x';
 
                 WatchContainer.appendChild(WatchImg);
                 WatchContainer.appendChild(WatchName);
                 WatchContainer.appendChild(ApproximationTag);
                 WatchContainer.appendChild(WatchPrice);
+                WatchContainer.appendChild(RemoveBtn);
                 document.getElementById('watchList').appendChild(WatchContainer);
+                
                 modalElement.click();
+                CalculateValue();
+                saveData()
+                deleteElement();
             })
         }
     
@@ -112,46 +124,61 @@ async function fetchQuery(query){
     }
 }
 
-async function fetchBackup(query){
-        let result;
-        const url = `https://chrono24.p.rapidapi.com/scraper/chrono24/search?query=${query}`;
-        const options = {
-            method: 'GET',
-            headers: {
-                'x-rapidapi-key': '7c86d04e2cmsh308f9037c038276p106460jsn191d593ba5c3',
-                'x-rapidapi-host': 'chrono24.p.rapidapi.com'
-            }
-        };
-    
-        try {
-            const response = await fetch(url, options);
-            result = await response.json();
-            console.log(result);
-        } catch (error) {
-            console.error(error);
-        }
-    
-        const url1 = `https://chrono24.p.rapidapi.com/scraper/chrono24/product?query=https%3A%2F%2Fwww.chrono24.com%2Frolex%2F${result[0].slug}`;
-        const options1 = {
-            method: 'GET',
-            headers: {
-                'x-rapidapi-key': '7c86d04e2cmsh308f9037c038276p106460jsn191d593ba5c3',
-                'x-rapidapi-host': 'chrono24.p.rapidapi.com'
-            }
-        };
-
-        try {
-            const response1 = await fetch(url1, options1);
-            const result1 = await response1.json();
-            console.log(result1);
-        } catch (error) {
-            console.error(error);
-        }
-    }
+function CalculateValue(){
+    let Watches = document.querySelectorAll('.watchItem h1');
+    let count = 0;
+    let temp;
+    Watches.forEach(function(watch){
+        temp = num(watch.textContent);
+        console.log(temp);
+        count += Number(temp);
+    })
+    const formattedAmountWithDecimals = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    }).format(count);
+    document.getElementById('totalNum').textContent = formattedAmountWithDecimals;
+}
 
 btn.onclick = function() {
     modal.style.display = "block";
 }
+function num(currency){
+    let temp = '';
+    for(let i = 0; i<currency.length; i++){
+        if (!(currency.charAt(i) === '$'|| currency.charAt(i) === ',')){
+            temp += currency.charAt(i);
+        }
+    }
+    return temp;
+};
+
+function deleteElement() {
+    document.querySelectorAll('.watchItem span').forEach(close => {
+        close.addEventListener('click', function() {
+            // Find the closest parent with the class 'watchItem' and remove it
+            const watchItemDiv = close.closest('.watchItem');
+            if (watchItemDiv) {
+                watchItemDiv.remove();
+                CalculateValue();
+                saveData();
+            }
+        });
+    });
+};
+
+function saveData(){
+    localStorage.setItem("data", document.getElementById('watchList').innerHTML);
+    console.log("saved");
+}
+function loadData(){
+    document.getElementById('watchList').innerHTML = localStorage.getItem("data");
+    CalculateValue();
+    deleteElement();
+}
+loadData();
 
 
 
