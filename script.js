@@ -4,6 +4,7 @@ var modal = document.getElementById("myModal");
 var btn = document.getElementById("add");
 let modalDocument;
 
+
 colBtn.addEventListener('click', (event)=>{
     if(event.target.checked){
         document.getElementById('col').style.backgroundColor = "hsl(196, 76%, 46%)";
@@ -67,7 +68,7 @@ modal.onload = function() {
                 let price = await fetchData(item.id);
                 console.log(price);
                 if (price.price === "Product not found"||price.price === "Price on request"){
-                    
+                    price.price = $0;
                 }
                 let WatchContainer = document.createElement('div');
                 let WatchImg = document.createElement('img');
@@ -77,6 +78,7 @@ modal.onload = function() {
                 let RemoveBtn = document.createElement('span');
 
                 WatchContainer.classList = 'watchItem';
+                WatchContainer.id = item.id;
                 WatchImg.src = item.querySelector('img').src;
                 WatchName.textContent = item.querySelector('p').textContent;
                 WatchPrice.textContent = price.price;
@@ -101,9 +103,13 @@ modal.onload = function() {
  
 };
 
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
 async function fetchData(ref) {
     try{
-        const response = await fetch(`https://serverchrono.onrender.com/api/scrape-price?query=${ref}`);
+        const response = await fetch(`https://server-chrono-mu.vercel.app/api/scrape-price?query=${ref}`);
         const result = await response.json();
         return result;
     }
@@ -113,7 +119,7 @@ async function fetchData(ref) {
 }
 
 async function fetchQuery(query){
-    const url = `https://serverchrono.onrender.com/api/products?query=${query}`
+    const url = `https://server-chrono-mu.vercel.app/api/products?query=${query}`
 
     try {
         const response = await fetch(url);
@@ -142,9 +148,6 @@ function CalculateValue(){
     document.getElementById('totalNum').textContent = formattedAmountWithDecimals;
 }
 
-btn.onclick = function() {
-    modal.style.display = "block";
-}
 function num(currency){
     let temp = '';
     for(let i = 0; i<currency.length; i++){
@@ -173,13 +176,41 @@ function saveData(){
     localStorage.setItem("data", document.getElementById('watchList').innerHTML);
     console.log("saved");
 }
-function loadData(){
+function loadData() {
+    // Load saved watch data from localStorage
     document.getElementById('watchList').innerHTML = localStorage.getItem("data");
+    
+    // Recalculate total value initially
     CalculateValue();
+
+    // Get all watches loaded from localStorage
+    let watches = document.querySelectorAll('.watchItem');
+
+    // Loop through each watch and fetch the latest price
+    watches.forEach(async function(watchItem) {
+        let watchId = watchItem.id; // The reference ID of the watch
+
+        // Fetch the latest price from the API
+        let priceData = await fetchData(watchId);
+        
+        if (priceData.price === "Product not found" || priceData.price === "Price on request") {
+            priceData.price = "$0";
+        }
+
+        // Update the price in the DOM
+        let watchPriceElement = watchItem.querySelector('h1');
+        watchPriceElement.textContent = priceData.price;
+
+        // After updating the price, recalculate the total value
+        CalculateValue();
+    });
+
+    // Ensure the delete functionality is still active
     deleteElement();
 }
-loadData();
 
+loadData();
+colBtn.click();
 
 
 
