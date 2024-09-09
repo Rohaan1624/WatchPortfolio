@@ -1,22 +1,30 @@
-const colBtn = document.getElementById('radioCol');
-const rowBtn = document.getElementById('radioRow');
+// const colBtn = document.getElementById('radioCol');
+// const rowBtn = document.getElementById('radioRow');
+const searchInput = document.querySelector("[watch-search]");
 var modal = document.getElementById("myModal");
 var btn = document.getElementById("add");
 let modalDocument;
+let searchWatch = []
+
+searchInput.addEventListener('input', function(e) {
+    const value = e.target.value.trim().toLowerCase();
+    filterWatches(value);
+});
 
 
-colBtn.addEventListener('click', (event)=>{
-    if(event.target.checked){
-        document.getElementById('col').style.backgroundColor = "hsl(196, 76%, 46%)";
-        document.getElementById('row').style.backgroundColor = "hsl(233, 6%, 27%)";
-    }
-})
-rowBtn.addEventListener('click', (event)=>{
-    if(event.target.checked){
-        document.getElementById('row').style.backgroundColor = "hsl(196, 76%, 46%)";
-        document.getElementById('col').style.backgroundColor = "hsl(233, 6%, 27%)";
-    }
-})
+// colBtn.addEventListener('click', (event)=>{
+//     if(event.target.checked){
+//         document.getElementById('col').style.backgroundColor = "hsl(196, 76%, 46%)";
+//         document.getElementById('row').style.backgroundColor = "hsl(233, 6%, 27%)";
+//     }
+// })
+// rowBtn.addEventListener('click', (event)=>{
+//     if(event.target.checked){
+//         document.getElementById('row').style.backgroundColor = "hsl(196, 76%, 46%)";
+//         document.getElementById('col').style.backgroundColor = "hsl(233, 6%, 27%)";
+//     }
+// })
+
 
 
 modal.onload = function() {
@@ -74,7 +82,6 @@ modal.onload = function() {
                 let WatchImg = document.createElement('img');
                 let WatchName = document.createElement('h3');
                 let WatchPrice = document.createElement('h1');
-                let ApproximationTag = document.createElement('p');
                 let RemoveBtn = document.createElement('span');
 
                 WatchContainer.classList = 'watchItem';
@@ -82,12 +89,10 @@ modal.onload = function() {
                 WatchImg.src = item.querySelector('img').src;
                 WatchName.textContent = item.querySelector('p').textContent;
                 WatchPrice.textContent = price.price;
-                ApproximationTag.textContent = 'Approx.';
                 RemoveBtn.textContent = 'x';
 
                 WatchContainer.appendChild(WatchImg);
                 WatchContainer.appendChild(WatchName);
-                WatchContainer.appendChild(ApproximationTag);
                 WatchContainer.appendChild(WatchPrice);
                 WatchContainer.appendChild(RemoveBtn);
                 document.getElementById('watchList').appendChild(WatchContainer);
@@ -96,6 +101,8 @@ modal.onload = function() {
                 CalculateValue();
                 saveData()
                 deleteElement();
+                priceTagPopup();
+
             })
         }
     
@@ -167,6 +174,7 @@ function deleteElement() {
                 watchItemDiv.remove();
                 CalculateValue();
                 saveData();
+
             }
         });
     });
@@ -209,10 +217,32 @@ function loadData() {
     deleteElement();
 }
 
+function priceTagPopup(){
+    document.querySelectorAll('.watchItem').forEach(function(item){
+        item.addEventListener('mouseover', function(){
+            item.querySelector('h1').style.display = 'block';
+            item.querySelector('span').style.display = 'block';
+        })
+        item.addEventListener('mouseout', function(){
+            console.log('hi')
+            item.querySelector('h1').style.display = 'none';
+            item.querySelector('span').style.display = 'none';
+        })
+    })
+}
+function filterWatches(searchTerm) {
+    const watchItems = document.querySelectorAll('.watchItem');
+    watchItems.forEach(item => {
+        const watchName = item.querySelector('h3').textContent.toLowerCase();
+        if (watchName.includes(searchTerm)) {
+            item.style.display = ''; // Show item
+        } else {
+            item.style.display = 'none'; // Hide item
+        }
+    });
+}
+
 loadData();
-colBtn.click();
-
-
-
+priceTagPopup();
 
 
