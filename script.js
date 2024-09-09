@@ -116,7 +116,7 @@ btn.onclick = function() {
 
 async function fetchData(ref) {
     try{
-        const response = await fetch(`https://server-chrono-mu.vercel.app/api/scrape-price?query=${ref}`);
+        const response = await fetch(`http://server-chrono-mu.vercel.app/api/scrape-price?query=${ref}`);
         const result = await response.json();
         return result;
     }
@@ -126,7 +126,7 @@ async function fetchData(ref) {
 }
 
 async function fetchQuery(query){
-    const url = `https://server-chrono-mu.vercel.app/api/products?query=${query}`
+    const url = `http://server-chrono-mu.vercel.app/api/products?query=${query}`
 
     try {
         const response = await fetch(url);
