@@ -12,6 +12,7 @@ body{
 .header{
     display: flex;
     justify-content: flex-end;
+    margin-bottom: 20px;
     
 }
 #add{
@@ -33,6 +34,9 @@ body{
 #total{
     position: relative;
     margin: auto;
+    background-color: hsl(233, 6%, 27%);
+    border-radius: 4px;
+    padding: 10px;
 }
 
 .title h1{
